@@ -36,6 +36,18 @@ class JsonBehavior extends ModelBehavior {
 		return true;
 	}
 
+	public function beforeFind(Model $Model, $query) {
+		foreach(Hash::extract($this->fields,$Model->name) as $fieldname) {
+			if(!empty($query['conditions'][$fieldname]) && is_array($query['conditions'][$fieldname])) {
+				$query['conditions'][$fieldname]=json_encode($query['conditions'][$fieldname]);
+			}
+			if(!empty($query['conditions'][$Model->alias.'.'.$fieldname]) && is_array($query['conditions'][$Model->alias.'.'.$fieldname])) {
+				$query['conditions'][$fieldname]=json_encode($query['conditions'][$Model->alias.'.'.$fieldname]);
+			}
+		}
+		return $query;
+	}
+
 	function afterFind(Model $Model,$results,$primary = false) {
 		foreach ($results as &$result) {
 			foreach(Hash::extract($this->fields,$Model->alias) as $fieldname) {
