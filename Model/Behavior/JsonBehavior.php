@@ -15,7 +15,7 @@ class JsonBehavior extends ModelBehavior {
 	}
 
 	function beforeSave(Model $Model,$options=array()) {
-		$jsonfields = Hash::extract($this->fields,$Model->name);
+		$jsonfields = Hash::extract($this->fields,$Model->alias);
 		if(!empty($jsonfields)) {
 			$id = $Model->id;
 			$data = $Model->data;
@@ -38,7 +38,7 @@ class JsonBehavior extends ModelBehavior {
 	}
 
 	public function beforeFind(Model $Model, $query) {
-		foreach(Hash::extract($this->fields,$Model->name) as $fieldname) {
+		foreach(Hash::extract($this->fields,$Model->alias) as $fieldname) {
 			if(!empty($query['conditions'][$fieldname]) && is_array($query['conditions'][$fieldname])) {
 				$query['conditions'][$fieldname]=json_encode($query['conditions'][$fieldname]);
 			}
@@ -51,7 +51,7 @@ class JsonBehavior extends ModelBehavior {
 
 	function afterFind(Model $Model,$results,$primary = false) {
 		foreach ($results as &$result) {
-			foreach(Hash::extract($this->fields,$Model->name) as $fieldname) {
+			foreach(Hash::extract($this->fields,$Model->alias) as $fieldname) {
 				if(!empty($result[$Model->alias][$fieldname])) {
 					$result[$Model->alias][$fieldname] = json_decode($result[$Model->alias][$fieldname],true);
 				}
