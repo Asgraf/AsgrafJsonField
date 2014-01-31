@@ -15,7 +15,7 @@ class JsonBehavior extends ModelBehavior {
 	}
 
 	function beforeSave(Model $Model,$options=array()) {
-		$jsonfields = Hash::extract($this->fields,$Model->alias);
+		$jsonfields = Hash::extract($this->fields,$Model->name);
 		if(!empty($jsonfields)) {
 			$id = $Model->id;
 			$data = $Model->data;
@@ -26,7 +26,8 @@ class JsonBehavior extends ModelBehavior {
 				if(array_key_exists($fieldname,$Model->data[$Model->alias])) {
 					if(is_array($Model->data[$Model->alias][$fieldname])) {
 						$oldfield_array = $row[$Model->alias][$fieldname]?:array();
-						$Model->data[$Model->alias][$fieldname] = json_encode(array_merge($oldfield_array,$Model->data[$Model->alias][$fieldname]));
+						$new_val = array_filter(Hash::merge($oldfield_array,$Model->data[$Model->alias][$fieldname]));
+						$Model->data[$Model->alias][$fieldname] = empty($new_val)?null:json_encode($new_val);
 					} else {
 						$Model->data[$Model->alias][$fieldname] = null;
 					}
@@ -50,7 +51,7 @@ class JsonBehavior extends ModelBehavior {
 
 	function afterFind(Model $Model,$results,$primary = false) {
 		foreach ($results as &$result) {
-			foreach(Hash::extract($this->fields,$Model->alias) as $fieldname) {
+			foreach(Hash::extract($this->fields,$Model->name) as $fieldname) {
 				if(!empty($result[$Model->alias][$fieldname])) {
 					$result[$Model->alias][$fieldname] = json_decode($result[$Model->alias][$fieldname],true);
 				}
