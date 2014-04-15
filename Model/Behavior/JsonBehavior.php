@@ -17,16 +17,22 @@ class JsonBehavior extends ModelBehavior {
 	function beforeSave(Model $Model,$options=array()) {
 		$jsonfields = Hash::extract($this->fields,$Model->alias);
 		if(!empty($jsonfields)) {
-			$id = $Model->id;
-			$data = $Model->data;
-			$row = $Model->read($jsonfields,$id);
-			$Model->id = $id;
-			$Model->data = $data;
+			if($Model->id) {
+				$id = $Model->id;
+				$data = $Model->data;
+				$row = $Model->read($jsonfields,$id);
+				$Model->id = $id;
+				$Model->data = $data;
+			}
 			foreach($jsonfields as $fieldname) {
 				if(array_key_exists($fieldname,$Model->data[$Model->alias])) {
 					if(is_array($Model->data[$Model->alias][$fieldname])) {
-						$oldfield_array = $row[$Model->alias][$fieldname]?:array();
-						$new_val = array_filter(Hash::merge($oldfield_array,$Model->data[$Model->alias][$fieldname]));
+						if($Model->id) {
+							$oldfield_array = $row[$Model->alias][$fieldname]?:array();
+							$new_val = array_filter(Hash::merge($oldfield_array,$Model->data[$Model->alias][$fieldname]));
+						} else {
+							$new_val = array_filter($Model->data[$Model->alias][$fieldname]);
+						}
 						$Model->data[$Model->alias][$fieldname] = empty($new_val)?null:json_encode($new_val);
 					} else {
 						$Model->data[$Model->alias][$fieldname] = null;
