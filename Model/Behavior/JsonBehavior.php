@@ -29,13 +29,14 @@ class JsonBehavior extends ModelBehavior {
 					if(is_array($Model->data[$Model->alias][$fieldname])) {
 						if($Model->id) {
 							$oldfield_array = $row[$Model->alias][$fieldname]?:array();
-							$new_val = array_filter(Hash::merge($oldfield_array,$Model->data[$Model->alias][$fieldname]));
+							$new_val = Hash::filter(Hash::merge($oldfield_array,$Model->data[$Model->alias][$fieldname]));
 						} else {
-							$new_val = array_filter($Model->data[$Model->alias][$fieldname]);
+							$new_val = Hash::filter($Model->data[$Model->alias][$fieldname]);
 						}
 						$Model->data[$Model->alias][$fieldname] = empty($new_val)?null:json_encode($new_val);
 					} else {
-						$Model->data[$Model->alias][$fieldname] = null;
+						$Model->data[$Model->alias][$fieldname] = Hash::filter(json_decode($Model->data[$Model->alias][$fieldname],true)?:array());
+						$Model->data[$Model->alias][$fieldname] = empty($new_val)?null:json_encode($new_val);
 					}
 				}
 			}
