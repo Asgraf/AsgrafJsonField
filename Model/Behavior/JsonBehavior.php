@@ -35,8 +35,9 @@ class JsonBehavior extends ModelBehavior {
 						}
 						$Model->data[$Model->alias][$fieldname] = empty($new_val)?null:json_encode($new_val);
 					} else {
-						$Model->data[$Model->alias][$fieldname] = Hash::filter(json_decode($Model->data[$Model->alias][$fieldname],true)?:array());
+						$new_val = Hash::filter(json_decode($Model->data[$Model->alias][$fieldname],true)?:array());
 						$Model->data[$Model->alias][$fieldname] = empty($new_val)?null:json_encode($new_val);
+
 					}
 				}
 			}
