@@ -16,6 +16,7 @@ class JsonBehavior extends ModelBehavior {
 
 	function beforeSave(Model $Model,$options=array()) {
 		$jsonfields = Hash::extract($this->fields,$Model->alias);
+		$jsonfields = array_intersect($jsonfields,array_keys($Model->data[ $Model->alias ]));
 		if(!empty($jsonfields)) {
 			if($Model->id) {
 				$id = $Model->id;
