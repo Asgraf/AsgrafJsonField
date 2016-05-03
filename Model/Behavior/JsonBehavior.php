@@ -30,7 +30,7 @@ class JsonBehavior extends ModelBehavior {
 					if(is_array($Model->data[$Model->alias][$fieldname])) {
 						if($Model->id) {
 							$oldfield_array = $row[$Model->alias][$fieldname]?:array();
-							$new_val = Hash::filter(Hash::merge($oldfield_array,$Model->data[$Model->alias][$fieldname]));
+							$new_val = Hash::filter(array_replace_recursive($oldfield_array,$Model->data[$Model->alias][$fieldname]));
 						} else {
 							$new_val = Hash::filter($Model->data[$Model->alias][$fieldname]);
 						}
